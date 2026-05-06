@@ -8,7 +8,7 @@ Clone the repository and move into the project root:
 
 .. code-block:: bash
 
-   git clone <your-te-flow-repo-url> TE-flow
+   git clone https://github.com/JieQYan/TE-flow.git TE-flow
    cd TE-flow
 
 The repository layout used by the workflow is:
