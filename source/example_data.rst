@@ -2,9 +2,12 @@ Example Data
 ============
 
 This page records the public data sources used as example inputs for TE-flow
-documentation and testing. The datasets are not redistributed with TE-flow;
-users should download them from the original repositories and cite the
-corresponding source publications and database accessions.
+documentation and testing. The raw datasets themselves are not redistributed
+with TE-flow. Instead, TE-flow provides a helper script,
+``test_data/download_databases.sh``, that downloads the source data from the
+original repositories and prepares example sample sheets. Users should still
+cite the corresponding source publications and database accessions when using
+these data.
 
 Species Used in the Examples
 ----------------------------
@@ -98,10 +101,20 @@ statement of the same Arabidopsis lncRNA study linked above.
 Example File Placement
 ----------------------
 
-After downloading and preprocessing the public data, place or link the files
-into the TE-flow runtime layout described in :ref:`expected-runtime-inputs`.
-Reference FASTA and GFF3 files should be placed under ``resources/refs/`` using
-species-based names such as:
+The helper script writes downloaded files under ``test_data/``:
+
+.. code-block:: text
+
+   test_data/raw/assembly/
+   test_data/raw/rnaseq/
+   test_data/raw/epigenetic/
+   test_data/resources/refs/
+   test_data/sample_sheets/
+
+To run TE-flow with the default configuration, copy or link the generated sample
+sheets and reference files into the runtime layout described in
+:ref:`expected-runtime-inputs`. Reference FASTA and GFF3 files should be
+available under ``resources/refs/`` using species-based names such as:
 
 .. code-block:: text
 
@@ -110,6 +123,6 @@ species-based names such as:
    resources/refs/Mli.fa
    resources/refs/Mli.gene.gff3
 
-Sample sheets should use the same species identifiers, ``Ath`` and ``Mli``, so
-that assembly, annotation, expression, and epigenetic outputs can be connected
-across modules.
+The script also creates example sample sheets in ``test_data/sample_sheets/``.
+They use the same species identifiers, ``Ath`` and ``Mli``, so that assembly,
+annotation, expression, and epigenetic outputs can be connected across modules.
