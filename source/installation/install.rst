@@ -21,8 +21,14 @@ The repository layout used by the workflow is:
    |-- docker/
    |-- docs/
    |-- scripts/
+   |-- test_data/
    |-- workflow/
    `-- resources/
+
+``test_data/`` contains helper files for downloading public example data, such
+as ``test_data/download_databases.sh``. The workflow itself reads runtime
+inputs from the paths configured in ``config/config.yaml`` and the sample sheets
+under ``resources/`` unless you point those settings to another location.
 
 Docker Image for HiTE, RepeatMasker, and Juicer
 -----------------------------------------------
