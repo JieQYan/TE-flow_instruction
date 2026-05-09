@@ -48,9 +48,10 @@ Build the image from the repository root:
      -t teflow/te-flow:1.0 \
      .
 
-Current repository defaults commonly refer to the image name
-``teflow/te-flow:1.0`` in runtime examples below. Use one of
-the following approaches:
+Current repository defaults commonly refer to the initialized image name
+``teflow/te-flow:1.0-init`` for HiTE and RepeatMasker-dependent annotation
+steps. Build the base image first, initialize RepeatMasker once, and commit the
+initialized container as ``teflow/te-flow:1.0-init``.
 
 * build the image with the tag expected by your config
 * or update ``config.yaml`` so ``params.annotation.hite.image``,
@@ -90,55 +91,59 @@ initialization helper.
    Optionally, the last Repbase RepeatMasker Edition library can also be
    combined with Dfam if you have access to that database.
 
-2. Make the database available inside the container.
+2. Put the database under the runtime resource directory.
 
-   With the default TE-flow config, RepeatMasker expects the database at:
+   With the default TE-flow config, the FamDB directory is:
 
    .. code-block:: text
 
-      /opt/RepeatMasker/Libraries/famdb
+      resources/famdb
+
+   For a working directory ``/path/to/workdir``, this means:
+
+   .. code-block:: text
+
+      /path/to/workdir/resources/famdb
 
    The corresponding config entries are:
 
    * ``annotation.repeatmasker.famdb_script``
    * ``annotation.repeatmasker.famdb_dir``
 
-   You can either put the ``FamDB`` files directly in that container path or
-   keep them on the host and mount them into the container.
+   The workflow mounts the working directory into the container when running
+   RepeatMasker, so ``resources/famdb`` remains portable across users and
+   machines. Do not hard-code a personal absolute path in the shared
+   ``config.yaml``.
 
-   To place the files inside a container environment, start an interactive
-   container from the host system:
+3. Initialize RepeatMasker and save the initialized image.
 
-   .. code-block:: bash
-
-      docker run --rm -it teflow/te-flow:1.0 bash
-
-   Then copy or download the ``FamDB`` files into:
-
-   .. code-block:: text
-
-      /opt/RepeatMasker/Libraries/famdb
-
-   To keep the files on the host, mount your host-side FamDB directory into the
-   expected container path:
+   Start an interactive container and mount the host-side FamDB directory into
+   the container's default FamDB path for initialization:
 
    .. code-block:: bash
 
-      docker run --rm -it \
-        -v /path/to/FamDB:/opt/RepeatMasker/Libraries/famdb \
+      docker run -it --name teflow_rm_init \
+        -v /path/to/workdir/resources/famdb:/opt/RepeatMasker/Libraries/famdb \
         teflow/te-flow:1.0 bash
 
-3. Run the RepeatMasker initialization helper.
-
-   After the database files are available at the expected path, run the helper
-   from the host system:
+   Inside the container, check that the database is visible and run the helper:
 
    .. code-block:: bash
 
-      docker run --rm -it teflow/te-flow:1.0 init_repeatmasker.sh
+      python /opt/RepeatMasker/famdb.py -i /opt/RepeatMasker/Libraries/famdb info
+      init_repeatmasker.sh
+      exit
 
-   This starts a new container from ``teflow/te-flow:1.0`` and runs
-   ``init_repeatmasker.sh`` automatically inside that container.
+   Then save the initialized container as the image used by the default config:
+
+   .. code-block:: bash
+
+      docker commit teflow_rm_init teflow/te-flow:1.0-init
+      docker rm teflow_rm_init
+
+   The mounted FamDB files are not copied into the image. During TE-flow runs,
+   the workflow reads the database from ``resources/famdb`` under the working
+   directory.
 
 The helper script ``docker/hite-repeatmasker-juicer/init_repeatmasker.sh``
 configures RepeatMasker with:
@@ -269,10 +274,10 @@ and this command:
 
 TE-flow reads ``/data/my_resources/rnaseq-sheet.csv``. If that file is not
 there, it falls back to ``/path/to/workdir/resources/rnaseq-sheet.csv`` and
-then to the repository copy. Absolute paths are used exactly as written.
-Container paths such as ``/opt/RepeatMasker/Libraries/famdb`` are different:
-they belong to the Docker image, so leave them unchanged unless you build a
-custom image.
+then to the repository copy. The same convention can be used for FamDB by
+keeping ``annotation.repeatmasker.famdb_dir`` as ``resources/famdb``. Absolute
+paths are used exactly as written, but they are less portable for shared
+configuration files.
 
 Typical Execution
 -----------------

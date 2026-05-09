@@ -450,7 +450,7 @@ Hi-C scaffolding parameters used by the current rules are:
    params:
      scaffolding:
        juicer_jar_path: "/opt/juicer-1.6/CPU/common/juicer_tools.1.9.9_jcuda.0.8.jar"
-       juicer_tools_docker_image: "teflow/te-flow:1.0"
+       juicer_tools_docker_image: "teflow/te-flow:1.0-init"
        manual_correction: false
        juicer_executable: "juicer"
      annotation:

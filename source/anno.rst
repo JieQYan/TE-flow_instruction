@@ -235,7 +235,7 @@ set in ``/path/to/workdir/config/config.yaml``:
    params:
      annotation:
        hite:
-         image: "teflow/te-flow:1.0"
+         image: "teflow/te-flow:1.0-init"
          threads: 20
          sudo_password_file: "resources/secret.pass"
          extra_params: ""
@@ -264,7 +264,7 @@ RepeatMasker is controlled in ``/path/to/workdir/config/config.yaml``:
      annotation:
        repeatmasker:
          enable: true
-         docker_image: "teflow/te-flow:1.0"
+         docker_image: "teflow/te-flow:1.0-init"
          threads: 15
          independent_visualization: false
          species_map:
